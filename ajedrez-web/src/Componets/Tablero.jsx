@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { posicionInicial, aplicarMovimiento, clonarTablero } from "../Data/tablero";
 import { Pieza } from "../Data/piezas";
 import { Pila } from "../Data/pila";
+import { esJaque } from "../Jaque/esJaque";
+import { esJaqueMate } from "../Jaque/esJaqueMate";
 
 const ICONOS = {
   blanco: {
@@ -25,6 +27,7 @@ const ICONOS = {
 const STORAGE_KEY = "ajedrez:estado";
 
 export default function Tablero() {
+  
   const cargarEstado = () => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -52,6 +55,10 @@ export default function Tablero() {
   const [movimientos, setMovimientos] = useState([]); // Array<[x,y]>
   const [historial, setHistorial] = useState(estadoInicial?.historial || []);
   const pilaRef = useMemo(() => new Pila(), []);
+  const [mensajeJaque, setMensajeJaque] = useState("");
+  const [jaqueMate, setJaqueMate] = useState(false);
+
+
 
   useEffect(() => {
     // Persistir a localStorage
@@ -60,9 +67,12 @@ export default function Tablero() {
       STORAGE_KEY,
       JSON.stringify({ tablero: plano, turno, historial })
     );
+    const enJaque = esJaque(tablero, turno);
+    setMensajeJaque(enJaque ? `¡${turno} está en jaque!` : "");
   }, [tablero, turno, historial]);
 
   const onClickCasilla = (i, j) => {
+    if (jaqueMate) return; //Bloqueamos movimientos despues de jaque mate
     const pieza = tablero[i][j];
     // Si ya hay selección y se pulsa un destino válido
     if (seleccionado) {
@@ -79,6 +89,24 @@ export default function Tablero() {
           captura: !!captura,
         };
         setTablero(t2);
+        //Alerta de Jaquemate
+        if (esJaqueMate(t2, turno === "blanco" ? "negro" : "blanco")) {
+           alert(`¡Jaque mate! Gana ${turno}`);}
+           //dectecccion de jaquemate en cada juada
+           if (esJaqueMate(t2, turno === "blanco" ? "negro" : "blanco")) {
+              setJaqueMate(true);
+               setMensajeJaque(`¡Jaque mate! Gana ${turno}`);
+                 return; // evita seguir procesando
+                  }
+          {jaqueMate && (
+             <div style={{ marginTop: 8, color: "#f87171", fontWeight: "bold" }}>
+             {mensajeJaque}
+              <div style={{ marginTop: 8 }}>
+             <button onClick={reiniciar} style={btnEstilo}>Reiniciar partida</button>
+              </div>
+              </div>)}
+
+
         setTurno(turno === "blanco" ? "negro" : "blanco");
         setSeleccionado(null);
         setMovimientos([]);
@@ -118,6 +146,9 @@ export default function Tablero() {
     setHistorial([]);
     setSeleccionado(null);
     setMovimientos([]);
+    setJaqueMate(false);
+    setMensajeJaque("");
+
     // limpiar pila creando una nueva
     // (más simple en este contexto)
     // Nota: pilaRef es un objeto con estado interno; re-crear:
@@ -128,6 +159,7 @@ export default function Tablero() {
   const size = 56; // px por casilla, un poco más grande
 
   return (
+
     <div style={{ display: "flex", gap: 16 }}>
       <div>
         <div
@@ -174,6 +206,9 @@ export default function Tablero() {
         <div style={{ marginTop: 8, color: "#e5e7eb" }}>
           Turno: <strong style={{ color: turno === "blanco" ? "#f9fafb" : "#f9fafb" }}>{turno}</strong>
         </div>
+        {mensajeJaque && (
+        <div style={{ marginTop: 4, color: "#f87171", fontWeight: "bold" }}>{mensajeJaque}
+        </div>)}
         <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
           <button onClick={deshacer} style={btnEstilo}>Deshacer</button>
           <button onClick={reiniciar} style={btnEstilo}>Reiniciar</button>
@@ -207,3 +242,5 @@ function coordStr([x, y]) {
   const files = "abcdefgh";
   return files[y] + (8 - x);
 }
+
+
