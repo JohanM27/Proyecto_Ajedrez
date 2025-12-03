@@ -176,6 +176,7 @@ export default function Tablero() {
               const esSeleccionado = seleccionado && seleccionado[0] === i && seleccionado[1] === j;
               const esMovPosible = movimientos.some(([x, y]) => x === i && y === j);
               const borde = esSeleccionado ? "3px solid #f59e0b" : esMovPosible ? "3px solid #10b981" : "1px solid transparent";
+              const pieceSize = Math.floor(size * 0.72);
               return (
                 <div
                   key={`${i}-${j}`}
@@ -196,8 +197,20 @@ export default function Tablero() {
                   }}
                   aria-label={`casilla-${i}-${j}`}
                   title={`${i},${j}`}
-                >
-                  {celda ? ICONOS[celda.color][celda.tipo] : ""}
+                  >
+                  {celda ? (
+                    <span
+                      style={{
+                        color: celda.color === "blanco" ? "#ffffff" : "#000000",
+                        fontSize: `${Math.floor(pieceSize * 0.8)}px`,
+                        lineHeight: 1,
+                        userSelect: "none",
+                        textShadow: celda.color === "blanco" ? "0 0 2px rgba(0,0,0,0.75)" : "0 0 2px rgba(255,255,255,0.75)",
+                      }}
+                    >
+                      {ICONOS[celda.color][celda.tipo]}
+                    </span>
+                  ) : ""}
                 </div>
               );
             })
