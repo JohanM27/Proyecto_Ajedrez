@@ -7,12 +7,12 @@ import { esJaqueMate } from "../Jaque/esJaqueMate";
 
 const ICONOS = {
   blanco: {
-    rey: "♔",
-    reina: "♕",
-    torre: "♖",
-    alfil: "♗",
-    caballo: "♘",
-    peon: "♙",
+    rey: "♚",
+    reina: "♛",
+    torre: "♜",
+    alfil: "♝",
+    caballo: "♞",
+    peon: "♟",
   },
   negro: {
     rey: "♚",
