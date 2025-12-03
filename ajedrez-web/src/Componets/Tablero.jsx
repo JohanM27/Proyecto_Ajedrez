@@ -216,8 +216,57 @@ export default function Tablero() {
             })
           )}
         </div>
-        <div style={{ marginTop: 8, color: "#e5e7eb" }}>
-          Turno: <strong style={{ color: turno === "blanco" ? "#f9fafb" : "#f9fafb" }}>{turno}</strong>
+        <div style={{ marginTop: 8 }}>
+          <style>{`
+            @keyframes pulseTurn { 
+              0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.18);} 
+              70% { box-shadow: 0 0 0 10px rgba(16,185,129,0);} 
+              100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);} 
+            }
+          `}</style>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: 10,
+                alignItems: 'center',
+                padding: '8px 12px',
+                borderRadius: 10,
+                background: turno === 'blanco' ? 'linear-gradient(90deg,#10b981,#06b6d4)' : '#0f172a',
+                color: '#fff',
+                boxShadow: turno === 'blanco' ? '0 6px 18px rgba(6,182,167,0.12)' : 'none',
+                transform: turno === 'blanco' ? 'scale(1.02)' : 'none',
+                animation: turno === 'blanco' ? 'pulseTurn 1.8s infinite' : 'none',
+                minWidth: 140,
+              }}
+            >
+              <div style={{ fontSize: 18 }}>{ICONOS['blanco']['peon']}</div>
+              <div style={{ fontWeight: 800, fontSize: 14 }}>Blanco</div>
+              <div style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700 }}>{turno === 'blanco' ? 'TU TURNO' : ''}</div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 10,
+                alignItems: 'center',
+                padding: '8px 12px',
+                borderRadius: 10,
+                background: turno === 'negro' ? 'linear-gradient(90deg,#10b981,#06b6d4)' : '#111827',
+                color: turno === 'negro' ? '#fff' : '#d1d5db',
+                boxShadow: turno === 'negro' ? '0 6px 18px rgba(6,182,167,0.12)' : 'none',
+                transform: turno === 'negro' ? 'scale(1.02)' : 'none',
+                animation: turno === 'negro' ? 'pulseTurn 1.8s infinite' : 'none',
+                minWidth: 140,
+              }}
+            >
+              <div style={{ fontSize: 18 }}>{ICONOS['negro']['peon']}</div>
+              <div style={{ fontWeight: 800, fontSize: 14 }}>Negro</div>
+              <div style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700 }}>{turno === 'negro' ? 'TU TURNO' : ''}</div>
+            </div>
+
+            {/* botón de cambio de turno eliminado: ahora el turno sólo cambia por movimientos válidos */}
+          </div>
         </div>
         {mensajeJaque && (
         <div style={{ marginTop: 4, color: "#f87171", fontWeight: "bold" }}>{mensajeJaque}
